@@ -1,0 +1,32 @@
+*,*::before,*::after{
+    box-sizing: border-box;
+}
+a{
+    text-decoration: none;
+    color: $black;
+    
+}
+img{
+    vertical-align: middle;
+    width: 100%;
+    object-fit: cover;
+    
+}
+li{
+    list-style: none;
+}
+td{
+    text-align: center;
+}
+.hoverblack{
+    &:hover{
+        background:#000;
+        color:#fff;
+    }
+}
+.hoverwhite{
+    &:hover{
+        background:#fff !important;
+        color:#000 !important;
+    }
+}
