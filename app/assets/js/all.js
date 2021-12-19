@@ -12,7 +12,7 @@ const token = { headers: { authorization: "DW4Cy62MZCRYaSzxl2IyiqqFl8V2" } };
 
 //畫圖
 function piechart(data) {
-
+//全產品類別營收比重
   const pieObj = {};
   data.forEach((item) => {
 
@@ -42,6 +42,63 @@ function piechart(data) {
 
     }
   });
+//全品項營收比重
+const categroyObj = {};
+data.forEach((item)=>{
+  item.products.forEach((i) => {
+    if (categroyObj[i.title] === undefined) {
+      categroyObj[i.title] = parseInt(i.quantity)
+    }
+    else {
+      categroyObj[i.title] += parseInt(i.quantity)
+    }
+  })
+})
+
+console.log(categroyObj)
+
+let categroyArray = Object.keys(categroyObj);
+let categoryArrayObj = [];
+categroyArray.forEach((item)=>{
+  categoryArrayObj.push({name:item,value:categroyObj[item]})
+});
+//console.log(categoryArrayObj);
+//依照數量排大小，由大至小
+
+categoryArrayObj.sort((a,b)=>{
+  return b.value - a.value
+});
+//console.log(categoryArrayObj)
+//把數量前三個提出，之後全部加到其他
+const newcategoryArrayObj=[{name:"其他",value:0}]
+categoryArrayObj.forEach((item,index)=>{
+
+  let number = 0;
+  if(index<3){
+    newcategoryArrayObj.push({name:item.name,value:item.value})
+    //categoryData.push([item.name,item.value])
+  }
+  else{
+    newcategoryArrayObj[0].value+=item.value
+  }
+
+})
+console.log(newcategoryArrayObj)
+//組成畫圖的資料
+let categoryData = [];
+newcategoryArrayObj.forEach((item)=>{
+  categoryData.push([item.name,item.value])
+})
+console.log(categoryData)
+
+const chart2 = c3.generate({
+  bindto: '#chartCategory',
+  data: {
+    columns:categoryData,
+    type: 'pie',
+
+  }
+});
 
 }
 //取得資料
