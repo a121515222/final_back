@@ -2,8 +2,8 @@
 
 const tableList = document.querySelector('.js-table');
 const delAll = document.querySelector('.js-delAll');
-
-
+const showchart = document.querySelector('.js-chart');
+const showOrderEmpty = document.querySelector('.js-emptyOrder');
 
 //全域變數
 
@@ -12,7 +12,7 @@ const token = { headers: { authorization: "DW4Cy62MZCRYaSzxl2IyiqqFl8V2" } };
 
 //畫圖
 function piechart(data) {
-//全產品類別營收比重
+  //全產品類別營收比重
   const pieObj = {};
   data.forEach((item) => {
 
@@ -26,85 +26,96 @@ function piechart(data) {
     })
 
   })
-  console.log(pieObj)
+  //console.log(pieObj)
   let pieData = [];
 
   Object.keys(pieObj).forEach((item) => {
     pieData.push([item, pieObj[item]])
   })
-  console.log(pieData)
+  //console.log(pieData)
 
   const chart = c3.generate({
     bindto: '#chart',
     data: {
-      columns:pieData,
+      columns: pieData,
       type: 'pie',
 
     }
   });
-//全品項營收比重
-const categroyObj = {};
-data.forEach((item)=>{
-  item.products.forEach((i) => {
-    if (categroyObj[i.title] === undefined) {
-      categroyObj[i.title] = parseInt(i.quantity)
+  //全品項營收比重
+  const categroyObj = {};
+  data.forEach((item) => {
+    item.products.forEach((i) => {
+      if (categroyObj[i.title] === undefined) {
+        categroyObj[i.title] = parseInt(i.quantity)
+      }
+      else {
+        categroyObj[i.title] += parseInt(i.quantity)
+      }
+    })
+  })
+
+  //console.log(categroyObj)
+
+  let categroyArray = Object.keys(categroyObj);
+  let categoryArrayObj = [];
+  categroyArray.forEach((item) => {
+    categoryArrayObj.push({ name: item, value: categroyObj[item] })
+  });
+  //console.log(categoryArrayObj);
+  //依照數量排大小，由大至小
+
+  categoryArrayObj.sort((a, b) => {
+    return b.value - a.value
+  });
+  //console.log(categoryArrayObj)
+  //把數量前三個提出，之後全部加到其他
+  const newcategoryArrayObj = [{ name: "其他", value: 0 }]
+  categoryArrayObj.forEach((item, index) => {
+
+    let number = 0;
+    if (index < 3) {
+      newcategoryArrayObj.push({ name: item.name, value: item.value })
+      //categoryData.push([item.name,item.value])
     }
     else {
-      categroyObj[i.title] += parseInt(i.quantity)
+      newcategoryArrayObj[0].value += item.value
     }
+
   })
-})
+  //console.log(newcategoryArrayObj)
+  //組成畫圖的資料
+  let categoryData = [];
+  newcategoryArrayObj.forEach((item) => {
+    categoryData.push([item.name, item.value])
+  })
+  //console.log(categoryData)
 
-console.log(categroyObj)
+  const chart2 = c3.generate({
+    bindto: '#chartCategory',
+    data: {
+      columns: categoryData,
+      type: 'pie',
 
-let categroyArray = Object.keys(categroyObj);
-let categoryArrayObj = [];
-categroyArray.forEach((item)=>{
-  categoryArrayObj.push({name:item,value:categroyObj[item]})
-});
-//console.log(categoryArrayObj);
-//依照數量排大小，由大至小
+    }
+  });
 
-categoryArrayObj.sort((a,b)=>{
-  return b.value - a.value
-});
-//console.log(categoryArrayObj)
-//把數量前三個提出，之後全部加到其他
-const newcategoryArrayObj=[{name:"其他",value:0}]
-categoryArrayObj.forEach((item,index)=>{
-
-  let number = 0;
-  if(index<3){
-    newcategoryArrayObj.push({name:item.name,value:item.value})
-    //categoryData.push([item.name,item.value])
-  }
-  else{
-    newcategoryArrayObj[0].value+=item.value
-  }
-
-})
-console.log(newcategoryArrayObj)
-//組成畫圖的資料
-let categoryData = [];
-newcategoryArrayObj.forEach((item)=>{
-  categoryData.push([item.name,item.value])
-})
-console.log(categoryData)
-
-const chart2 = c3.generate({
-  bindto: '#chartCategory',
-  data: {
-    columns:categoryData,
-    type: 'pie',
+  //後台有資料就顯示圖片、與資料、按鈕
+  //console.log(categoryData)
+  if (categoryData.length > 1) {
+    showchart.classList.remove('d-none');
+    delAll.classList.remove('d-none');
+    tableList.classList.remove('d-none');
+    showOrderEmpty.classList.add('d-none');
+    
 
   }
-});
 
 }
 //取得資料
 function getOrderData() {
   axios.get(`https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders`, token).then((response) => {
-    console.log(response.data)
+    //console.log(response.data)
     render(response.data.orders)
   }).catch((error) => { console.log(error) })
 }
@@ -226,7 +237,7 @@ function delAllOrder(e) {
 }
 
 //功能集成
-function render(data){
+function render(data) {
   piechart(data);
   renderList(data);
 }
