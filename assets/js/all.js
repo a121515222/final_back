@@ -2,7 +2,9 @@
 
 //DOM
 var tableList = document.querySelector('.js-table');
-var delAll = document.querySelector('.js-delAll'); //全域變數
+var delAll = document.querySelector('.js-delAll');
+var showchart = document.querySelector('.js-chart');
+var showOrderEmpty = document.querySelector('.js-emptyOrder'); //全域變數
 
 var api_path = "chun-chia";
 var token = {
@@ -22,13 +24,13 @@ function piechart(data) {
         pieObj[i.category] += parseInt(i.quantity);
       }
     });
-  });
-  console.log(pieObj);
+  }); //console.log(pieObj)
+
   var pieData = [];
   Object.keys(pieObj).forEach(function (item) {
     pieData.push([item, pieObj[item]]);
-  });
-  console.log(pieData);
+  }); //console.log(pieData)
+
   var chart = c3.generate({
     bindto: '#chart',
     data: {
@@ -46,8 +48,8 @@ function piechart(data) {
         categroyObj[i.title] += parseInt(i.quantity);
       }
     });
-  });
-  console.log(categroyObj);
+  }); //console.log(categroyObj)
+
   var categroyArray = Object.keys(categroyObj);
   var categoryArrayObj = [];
   categroyArray.forEach(function (item) {
@@ -78,27 +80,35 @@ function piechart(data) {
     } else {
       newcategoryArrayObj[0].value += item.value;
     }
-  });
-  console.log(newcategoryArrayObj); //組成畫圖的資料
+  }); //console.log(newcategoryArrayObj)
+  //組成畫圖的資料
 
   var categoryData = [];
   newcategoryArrayObj.forEach(function (item) {
     categoryData.push([item.name, item.value]);
-  });
-  console.log(categoryData);
+  }); //console.log(categoryData)
+
   var chart2 = c3.generate({
     bindto: '#chartCategory',
     data: {
       columns: categoryData,
       type: 'pie'
     }
-  });
+  }); //後台有資料就顯示圖片、與資料、按鈕
+  //console.log(categoryData)
+
+  if (categoryData.length > 1) {
+    showchart.classList.remove('d-none');
+    delAll.classList.remove('d-none');
+    tableList.classList.remove('d-none');
+    showOrderEmpty.classList.add('d-none');
+  }
 } //取得資料
 
 
 function getOrderData() {
   axios.get("https://livejs-api.hexschool.io/api/livejs/v1/admin/".concat(api_path, "/orders"), token).then(function (response) {
-    console.log(response.data);
+    //console.log(response.data)
     render(response.data.orders);
   })["catch"](function (error) {
     console.log(error);

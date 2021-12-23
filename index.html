@@ -27,16 +27,17 @@
 
 
   <div class="bg-black py-3"></div>
-<section class="wrap">
+<section class="wrap js-chart d-none">
   <h2 class="section-title">全產品類別營收比重</h2>
   <div id="chart"></div>
   <h2 class="section-title">全品項營收比重</h2>
   <div id="chartCategory"></div>
 </section>
 <section class="wrap orderPage-list">
-  <a href="#" class="js-delAll discardAllBtn" delAll='true'>清除全部訂單</a>
+  <a href="#" class="js-delAll discardAllBtn d-none" delAll='true'>清除全部訂單</a>
   <div class="orderTableWrap">
-      <table class="js-table orderPage-table">
+      <h2 class="js-emptyOrder text-center fs-1">目前沒有訂單</h2>
+      <table class="js-table orderPage-table d-none">
           <thead>
               <tr>
                   <th>訂單編號</th>
